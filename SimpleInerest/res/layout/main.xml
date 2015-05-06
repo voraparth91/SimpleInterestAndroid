@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+>
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/labelAmount" />
+<EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/etAmount" android:inputType="numberDecimal"/>
+
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/labelInterest" />
+<EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/etInterest" android:inputType="numberDecimal"/>
+
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/labelStartDate" />
+
+<LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+
+    <EditText android:layout_weight="1" android:layout_width="0px" android:layout_height="wrap_content" android:inputType="date" android:id="@+id/etStart" />
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pick" android:id="@+id/buttonStart"/>
+
+</LinearLayout>
+
+
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/labelEndDate" />
+
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+
+        <EditText android:layout_weight="1" android:layout_width="0px" android:layout_height="wrap_content" android:inputType="date" android:id="@+id/etEnd" />
+        <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pick" android:id="@+id/buttonEnd"/>
+
+    </LinearLayout>
+
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/buttonCalculate" android:id="@+id/buttonCalculate" />
+
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/statusInterest"/>
+
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/statusTotal"/>
+
+</LinearLayout>
+

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SimpleInterest</string>
+    <string name="labelInterest">Rate Of Interest</string>
+    <string name="labelAmount">Principal Amount</string>
+    <string name="labelStartDate">Start Date</string>
+    <string name="labelEndDate">End Date</string>
+    <string name="buttonCalculate">Simple Interest</string>
+</resources>
