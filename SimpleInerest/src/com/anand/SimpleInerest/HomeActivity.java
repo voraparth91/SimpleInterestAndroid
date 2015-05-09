@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,11 +20,14 @@ public class HomeActivity extends Activity {
     private EditText roi;
     private EditText startDate;
     private EditText endDate;
+    private EditText etDays;
+
     private Button pickStart;
     private Button pickEnd;
     private Button calculate;
     private TextView statusInterest;
     private TextView statusTotal;
+    private CheckBox checkDays;
 
     private int year;
     private int Eyear;
@@ -46,64 +50,81 @@ public class HomeActivity extends Activity {
         addListenerOnButton();
         setCalculateButton();
     }
-    public void setCalculateButton(){
+
+    public void setCalculateButton() {
         calculate.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(amount.getEditableText().toString().trim().equals("")){
-                    Toast.makeText(getApplicationContext(),"Please Enter Amount",Toast.LENGTH_LONG).show();
+                if (amount.getEditableText().toString().trim().equals("")) {
+                    Toast.makeText(getApplicationContext(), "Please Enter Amount", Toast.LENGTH_LONG).show();
                     amount.requestFocus();
                     return;
                 }
-                if(roi.getEditableText().toString().trim().equals("")){
-                    Toast.makeText(getApplicationContext(),"Please Enter Rate Of Interest in Percentage",Toast.LENGTH_LONG).show();
+                if (roi.getEditableText().toString().trim().equals("")) {
+                    Toast.makeText(getApplicationContext(), "Please Enter Rate Of Interest in Percentage", Toast.LENGTH_LONG).show();
                     roi.requestFocus();
                     return;
                 }
                 double P = Double.parseDouble(amount.getEditableText().toString().trim());
                 double R = Double.parseDouble(roi.getEditableText().toString().trim());
 
-                int D= 0;
-                Date myStartDate;
-                Date myEndDate;
-                SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                int D = 0;
+                if(checkDays.isChecked()){
+                    if (etDays.getEditableText().toString().trim().equals("")) {
+                        Toast.makeText(getApplicationContext(), "Please Enter Number Of Days to be Charged", Toast.LENGTH_LONG).show();
+                        etDays.requestFocus();
+                        return;
+                    }
+                    D = Integer.parseInt(etDays.getEditableText().toString().trim());
+                    Toast.makeText(getApplicationContext(), "Days to be Charged is " + D, Toast.LENGTH_LONG).show();
+                    double I = (P * R * D) / 36500;
+                    double T = P + I;
+                    String interestStr = String.format("Interest to be colleted is INR %.2f", I);
+                    statusInterest.setText(interestStr);
+                    String totalStr = String.format("Total to be colleted is INR %.2f", T);
+                    statusTotal.setText(totalStr);
+                }else {
+                    Date myStartDate;
+                    Date myEndDate;
+                    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
-                try {
-                    myStartDate = df.parse(startDate.getEditableText().toString().trim());
-                } catch (ParseException e) {
-                    Toast.makeText(getApplicationContext(),"Please Enter a Valid Start Date",Toast.LENGTH_LONG).show();
-                    startDate.requestFocus();
-                    return;
+                    try {
+                        myStartDate = df.parse(startDate.getEditableText().toString().trim());
+                    } catch (ParseException e) {
+                        Toast.makeText(getApplicationContext(), "Please Enter a Valid Start Date", Toast.LENGTH_LONG).show();
+                        startDate.requestFocus();
+                        return;
+                    }
+
+                    try {
+                        myEndDate = df.parse(endDate.getEditableText().toString().trim());
+                    } catch (ParseException e) {
+                        Toast.makeText(getApplicationContext(), "Please Enter a Valid End Date", Toast.LENGTH_LONG).show();
+                        endDate.requestFocus();
+                        return;
+                    }
+                    if (myEndDate.getTime() < myStartDate.getTime()) {
+                        Toast.makeText(getApplicationContext(), "End Date should be greater than Start Date", Toast.LENGTH_LONG).show();
+                        endDate.requestFocus();
+                        return;
+                    }
+
+                    long diff = myEndDate.getTime() - myStartDate.getTime();
+                    D = (int) (diff / 1000L / 60L / 60L / 24L);
+                    Toast.makeText(getApplicationContext(), "Days to be Charged is " + D, Toast.LENGTH_LONG).show();
+                    etDays.setText(String.valueOf(D));
+                    double I = (P * R * D) / 36500;
+                    double T = P + I;
+                    String interestStr = String.format("Interest to be colleted is INR %.2f", I);
+                    statusInterest.setText(interestStr);
+                    String totalStr = String.format("Total to be colleted is INR %.2f", T);
+                    statusTotal.setText(totalStr);
                 }
-
-                try {
-                    myEndDate = df.parse(endDate.getEditableText().toString().trim());
-                } catch (ParseException e) {
-                    Toast.makeText(getApplicationContext(),"Please Enter a Valid End Date",Toast.LENGTH_LONG).show();
-                    endDate.requestFocus();
-                    return;
-                }
-                if(myEndDate.getTime()<myStartDate.getTime()){
-                    Toast.makeText(getApplicationContext(),"End Date should be greater than Start Date",Toast.LENGTH_LONG).show();
-                    endDate.requestFocus();
-                    return;
-                }
-
-                long diff = myEndDate.getTime() - myStartDate.getTime();
-                D = (int) (diff / 1000L / 60L / 60L / 24L);
-                Toast.makeText(getApplicationContext(),"Days to be Charged is "+D,Toast.LENGTH_LONG).show();
-                double I = (P * R * D ) / 36500;
-                double T = P + I;
-                String interestStr = String.format("Interest to be colleted is INR %.2f",I);
-                statusInterest.setText(interestStr);
-                String totalStr = String.format("Total to be colleted is INR %.2f",T);
-                statusTotal.setText(totalStr);
-
             }
         });
     }
 
-    public void initializeDatePickers(){
+    public void initializeDatePickers() {
         cal = Calendar.getInstance();
         year = cal.get(Calendar.YEAR);
         month = cal.get(Calendar.MONTH);
@@ -114,17 +135,33 @@ public class HomeActivity extends Activity {
         Eday = cal.get(Calendar.DAY_OF_MONTH);
     }
 
-    public void initializeAllViews(){
-        amount = (EditText)findViewById(R.id.etAmount);
-        roi = (EditText)findViewById(R.id.etInterest);
-        startDate = (EditText)findViewById(R.id.etStart);
-        endDate = (EditText)findViewById(R.id.etEnd);
-        pickStart = (Button)findViewById(R.id.buttonStart);
-        pickEnd = (Button)findViewById(R.id.buttonEnd);
-        calculate = (Button)findViewById(R.id.buttonCalculate);
-        statusInterest = (TextView)findViewById(R.id.statusInterest);
-        statusTotal = (TextView)findViewById(R.id.statusTotal);
+    public void initializeAllViews() {
+        amount = (EditText) findViewById(R.id.etAmount);
+        roi = (EditText) findViewById(R.id.etInterest);
+        startDate = (EditText) findViewById(R.id.etStart);
+        endDate = (EditText) findViewById(R.id.etEnd);
+        pickStart = (Button) findViewById(R.id.buttonStart);
+        pickEnd = (Button) findViewById(R.id.buttonEnd);
+        calculate = (Button) findViewById(R.id.buttonCalculate);
+        statusInterest = (TextView) findViewById(R.id.statusInterest);
+        statusTotal = (TextView) findViewById(R.id.statusTotal);
+        checkDays = (CheckBox) findViewById(R.id.checkDays);
+        etDays = (EditText) findViewById(R.id.etDays);
+        etDays.setEnabled(false);
+        checkDays.setChecked(false);
+        checkDays.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    etDays.setEnabled(true);
+                } else {
+                    etDays.setEnabled(false);
+                }
+            }
+        });
+
     }
+
     public void addListenerOnButton() {
         pickStart.setOnClickListener(new OnClickListener() {
             @Override
@@ -146,7 +183,7 @@ public class HomeActivity extends Activity {
             case START_DATE_DIALOG_ID:
                 // set date picker as current date
                 return new DatePickerDialog(this, datePickerListener,
-                        year, month,day);
+                        year, month, day);
             case END_DATE_DIALOG_ID:
                 // set date picker as current date
                 return new DatePickerDialog(this, EdatePickerListener,
